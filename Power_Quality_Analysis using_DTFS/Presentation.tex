@@ -1,0 +1,1137 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+
+% Theme and color scheme
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+% Packages
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+
+% Code listing settings
+\lstset{
+    basicstyle=\ttfamily\tiny,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=3pt,
+    backgroundcolor=\color{gray!10},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    tabsize=2,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=false,
+    language=Matlab
+}
+
+% Title page information
+\title[Power Quality Analysis]{Power Quality Analysis and Harmonic Distortion Assessment using DTFS}
+\subtitle{Digital Signal Processing - FISAC Assessment}
+\author[Team 24\_30\_39\_54\_68]{
+Akshit Kiran (24) \and 
+Aditya Pratap Singh (30) \and 
+Sreekar T Gopal (39) \and\\
+Manikanta Gonugondla (54) \and 
+Sparsh Raghav (68)
+}
+\institute[MIT]{
+Manipal Institute of Technology\\
+Department of Electrical \& Electronics Engineering
+}
+\date{October 2025}
+
+\begin{document}
+
+% =====================================================================
+% TITLE SLIDE
+% =====================================================================
+\begin{frame}[plain]
+    \titlepage
+\end{frame}
+
+% =====================================================================
+% TABLE OF CONTENTS
+% =====================================================================
+\begin{frame}{Presentation Outline}
+    \tableofcontents
+\end{frame}
+
+% =====================================================================
+% SECTION 1: INTRODUCTION
+% =====================================================================
+\section{Introduction}
+
+\begin{frame}{Project Overview}
+    \begin{block}{Objective}
+        Develop a comprehensive framework for power quality analysis using \textbf{Discrete Time Fourier Series (DTFS)} to identify and mitigate harmonic distortion in electrical power systems.
+    \end{block}
+    
+    \vspace{0.5cm}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Key Components:}
+            \begin{itemize}
+                \item DTFS analysis implementation
+                \item Power quality metrics calculation
+                \item Harmonic filtering techniques
+                \item Multiple scenario analysis
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Applications:}
+            \begin{itemize}
+                \item LED lighting systems
+                \item Motor drives (VFDs)
+                \item Data center loads
+                \item IEEE 519 compliance
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Motivation}
+    \begin{block}{Power Quality Challenges}
+        Modern power systems face increasing harmonic distortion due to non-linear loads.
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Problems Caused:}
+            \begin{itemize}
+                \item Equipment overheating
+                \item Transformer derating
+                \item Power factor degradation
+                \item System efficiency reduction
+                \item Equipment malfunction
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Non-Linear Loads:}
+            \begin{itemize}
+                \item LED lighting
+                \item Variable frequency drives
+                \item Switch-mode power supplies
+                \item Computers \& data centers
+                \item Power electronic devices
+            \end{itemize}
+        \end{column}
+    \end{columns}
+    
+    \vspace{0.3cm}
+    \begin{alertblock}{Need}
+        Accurate harmonic analysis and effective mitigation strategies are essential.
+    \end{alertblock}
+\end{frame}
+
+% =====================================================================
+% SECTION 2: THEORETICAL BACKGROUND
+% =====================================================================
+\section{Theoretical Background}
+
+\begin{frame}{Discrete Time Fourier Series (DTFS)}
+    \begin{block}{Definition}
+        DTFS decomposes periodic discrete-time signals into harmonic components.
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \textbf{Analysis Equation (Forward Transform):}
+    \begin{equation}
+        X[k] = \frac{1}{N} \sum_{n=0}^{N-1} x[n] \cdot e^{-j2\pi kn/N}
+    \end{equation}
+    
+    \textbf{Synthesis Equation (Inverse Transform):}
+    \begin{equation}
+        x[n] = \sum_{k=0}^{N-1} X[k] \cdot e^{j2\pi kn/N}
+    \end{equation}
+    
+    \vspace{0.2cm}
+    
+    where $k$ = harmonic index, $n$ = time sample index, $N$ = period length
+\end{frame}
+
+\begin{frame}{Power Quality Metrics}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Total Harmonic Distortion (THD):}
+            \begin{equation}
+                THD_F = \frac{\sqrt{\sum_{h=2}^{\infty} V_h^2}}{V_1} \times 100\%
+            \end{equation}
+            
+            \textbf{Crest Factor (CF):}
+            \begin{equation}
+                CF = \frac{V_{peak}}{V_{RMS}}
+            \end{equation}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{True Power Factor (TPF):}
+            \begin{equation}
+                TPF = \frac{1}{\sqrt{1 + (THD_F/100)^2}}
+            \end{equation}
+            
+            \textbf{K-Factor:}
+            \begin{equation}
+                K = \frac{\sum_{h=1}^{h_{max}} h^2 \cdot I_h^2}{\sum_{h=1}^{h_{max}} I_h^2}
+            \end{equation}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{IEEE 519-2014 Standards}
+    \begin{block}{Voltage Distortion Limits (V $\leq$ 1.0 kV)}
+        For systems with voltage less than or equal to 1.0 kV (applicable to 230V single-phase):
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{lc}
+            \toprule
+            \textbf{Parameter} & \textbf{Limit} \\
+            \midrule
+            Individual Harmonic Distortion & 5.0\% \\
+            Total Harmonic Distortion (THD) & 8.0\% \\
+            \textcolor{green!70!black}{\textbf{Excellent Quality}} & \textcolor{green!70!black}{THD $<$ 5.0\%} \\
+            \textcolor{orange}{\textbf{Acceptable Quality}} & \textcolor{orange}{5.0\% $\leq$ THD $\leq$ 8.0\%} \\
+            \textcolor{red}{\textbf{Poor Quality}} & \textcolor{red}{THD $>$ 8.0\%} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Sources of Harmonic Distortion}
+    \begin{columns}[T]
+        \begin{column}{0.32\textwidth}
+            \textbf{LED Lighting}
+            \begin{itemize}
+                \item Single-phase rectifiers
+                \item 3rd harmonic dominant
+                \item 15-20\% of fundamental
+            \end{itemize}
+            \vspace{0.2cm}
+            \begin{center}
+                \includegraphics[width=0.8\textwidth,height=2.5cm,keepaspectratio]{figures/1.png}
+            \end{center}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \textbf{Motor Drives (VFD)}
+            \begin{itemize}
+                \item 6-pulse rectifiers
+                \item 5th \& 7th harmonics
+                \item $h = 6k \pm 1$
+            \end{itemize}
+            \vspace{0.2cm}
+            \begin{center}
+                \includegraphics[width=0.8\textwidth,height=2.5cm,keepaspectratio]{figures/1.png}
+            \end{center}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \textbf{Data Centers (SMPS)}
+            \begin{itemize}
+                \item High-frequency switching
+                \item Multiple odd harmonics
+                \item Uniform distribution
+            \end{itemize}
+            \vspace{0.2cm}
+            \begin{center}
+                \includegraphics[width=0.8\textwidth,height=2.5cm,keepaspectratio]{figures/1.png}
+            \end{center}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% =====================================================================
+% SECTION 3: SYSTEM ARCHITECTURE
+% =====================================================================
+\section{System Architecture}
+
+\begin{frame}{Project Structure}
+    \begin{center}
+        \includegraphics[width=0.85\textwidth,height=6cm,keepaspectratio]{figures/1.png}
+    \end{center}
+    
+    \vspace{0.2cm}
+    
+    \begin{block}{Modular Design}
+        Six core functional modules with comprehensive testing and validation.
+    \end{block}
+\end{frame}
+
+\begin{frame}{System Parameters}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Configuration:}
+            \begin{itemize}
+                \item \textbf{Sampling Frequency:} 10 kHz
+                \item \textbf{Fundamental Frequency:} 50 Hz
+                \item \textbf{Period Length:} 200 samples
+                \item \textbf{Nominal Voltage:} 230V RMS
+                \item \textbf{Analysis Duration:} 20 ms
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Scenarios Analyzed:}
+            \begin{enumerate}
+                \item Ideal Power (Reference)
+                \item LED Lighting Systems
+                \item Motor Drive (6-Pulse VFD)
+                \item Data Center Loads
+            \end{enumerate}
+        \end{column}
+    \end{columns}
+    
+    \vspace{0.3cm}
+    
+    \begin{alertblock}{Indian Grid Standard}
+        Single-phase: 230V RMS @ 50 Hz (as per IS 13779)
+    \end{alertblock}
+\end{frame}
+
+% =====================================================================
+% SECTION 4: IMPLEMENTATION
+% =====================================================================
+\section{Implementation Details}
+
+\begin{frame}[fragile]{Core Function 1: DTFS Analysis}
+    \textbf{File:} \texttt{calculate\_dtfs.m}
+    
+    \vspace{0.2cm}
+    
+    \begin{lstlisting}[language=Matlab]
+function [X_k, magnitude, phase, frequencies] = calculate_dtfs(x, fs, N)
+    % Preallocate coefficient array
+    X_k = zeros(N, 1);
+    
+    % Calculate DTFS coefficients
+    for k = 0:(N-1)
+        sum_value = 0;
+        for n = 0:(N-1)
+            complex_exp = exp(-1j*2*pi*k*n/N);
+            sum_value = sum_value + x(n+1) * complex_exp;
+        end
+        X_k(k+1) = sum_value / N;
+    end
+    
+    % Extract magnitude (scale for single-sided spectrum)
+    magnitude = abs(X_k);
+    magnitude(2:end) = 2 * magnitude(2:end);
+    
+    % Extract phase
+    phase = angle(X_k);
+    
+    % Generate frequency axis
+    frequencies = (0:(N-1))' * (fs/N);
+end
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{DTFS Analysis - Key Points}
+    \begin{block}{Direct Implementation}
+        \begin{itemize}
+            \item Direct implementation without FFT libraries
+            \item Complexity: $O(N^2)$ for $N$ samples
+            \item For $N = 200$: 40,000 complex multiplications
+            \item Computation time: $\sim$0.05 seconds per analysis
+        \end{itemize}
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Advantages:}
+            \begin{itemize}
+                \item Educational value
+                \item Clear mathematical insight
+                \item No toolbox dependency
+                \item Exact frequency resolution
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Output Parameters:}
+            \begin{itemize}
+                \item Complex coefficients $X[k]$
+                \item Magnitude spectrum
+                \item Phase spectrum
+                \item Frequency axis
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Core Function 2: Inverse DTFS}
+    \textbf{File:} \texttt{synthesize\_from\_dtfs.m}
+    
+    \vspace{0.2cm}
+    
+    \begin{lstlisting}[language=Matlab]
+function [x_reconstructed, t] = synthesize_from_dtfs(X_k, fs, N, num_periods)
+    total_samples = N * num_periods;
+    x_reconstructed = zeros(total_samples, 1);
+    t = (0:(total_samples-1))' / fs;
+    
+    % Inverse DTFS synthesis: x[n] = sum_k X[k]*exp(j*2*pi*k*n/N)
+    for n = 0:(total_samples-1)
+        sum_value = 0;
+        for k = 0:(N-1)
+            n_mod = mod(n, N);
+            complex_exp = exp(1j * 2 * pi * k * n_mod / N);
+            sum_value = sum_value + X_k(k+1) * complex_exp;
+        end
+        x_reconstructed(n+1) = sum_value;
+    end
+    
+    x_reconstructed = real(x_reconstructed);
+end
+    \end{lstlisting}
+    
+    \vspace{0.2cm}
+    
+    \begin{block}{Purpose}
+        Reconstructs time-domain signal from DTFS coefficients (essential for filtering).
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Core Function 3: Signal Generation (Part 1)}
+    \textbf{File:} \texttt{generate\_distorted\_signal.m}
+    
+    \vspace{0.2cm}
+    
+    \begin{lstlisting}[language=Matlab]
+function [signal, t, harmonic_info] = ...
+         generate_distorted_signal(scenario, fs, f0, N, V_rms_fundamental)
+    
+    % Calculate fundamental peak voltage
+    V_peak_fundamental = V_rms_fundamental * sqrt(2);
+    
+    % Generate time vector
+    t = (0:N-1)' / fs;
+    
+    % Define harmonic content based on scenario
+    switch scenario
+        case 'led_lighting'
+            harmonics = [1, 3, 5, 7, 9];
+            percentages = [100, 18, 8, 4, 2];
+            phases = [0, pi/6, -pi/4, pi/3, 0];
+            expected_THD = 20.2;
+            
+        case 'motor_drive'
+            harmonics = [1, 5, 7, 11, 13];
+            percentages = [100, 20, 14, 9, 6];
+            phases = [0, -pi/4, pi/4, -pi/6, pi/6];
+            expected_THD = 26.7;
+    end
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Core Function 3: Signal Generation (Part 2)}
+    \begin{lstlisting}[language=Matlab]
+    % Generate composite signal
+    signal = zeros(N, 1);
+    
+    for i = 1:length(harmonics)
+        h = harmonics(i);
+        freq = h * f0;
+        mag = V_peak_fundamental * (percentages(i) / 100);
+        signal = signal + mag * sin(2*pi*freq*t + phases(i));
+    end
+    
+    % Store harmonic information
+    harmonic_info.harmonics = harmonics;
+    harmonic_info.magnitudes = V_peak_fundamental*(percentages/100);
+    harmonic_info.phases = phases;
+    harmonic_info.percentages = percentages;
+    harmonic_info.expected_THD = expected_THD;
+end
+    \end{lstlisting}
+    
+    \vspace{0.2cm}
+    
+    \begin{block}{Mathematical Model}
+        $v(t) = \sum_{h=1}^{H} V_h \sin(2\pi h f_0 t + \phi_h)$
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Core Function 4: Power Quality Metrics}
+    \textbf{File:} \texttt{power\_quality\_metrics.m}
+    
+    \begin{lstlisting}[language=Matlab]
+function metrics = power_quality_metrics(signal, magnitude, fs, f0)
+    % Extract fundamental and harmonics
+    V1_peak = magnitude(2);
+    V1_rms = V1_peak / sqrt(2);
+    harmonic_rms = magnitude(3:end) / sqrt(2);
+    
+    % Calculate THD-F
+    harmonic_rms_total = sqrt(sum(harmonic_rms.^2));
+    THD_F = (harmonic_rms_total/V1_rms)*100;
+    
+    % Calculate crest factor
+    signal_rms = sqrt(mean(signal.^2));
+    crest_factor = max(abs(signal)) / signal_rms;
+    
+    % Calculate power factor
+    distortion_PF = 1 / sqrt(1 + (THD_F/100)^2);
+    
+    % Calculate K-factor
+    K_factor = 1.0;
+    for h = 2:length(harmonic_rms)
+        K_factor = K_factor + h^2*(harmonic_rms(h-1)/V1_rms)^2;
+    end
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Core Function 5: Harmonic Filtering}
+    \textbf{File:} \texttt{design\_harmonic\_filter.m}
+    
+    \vspace{0.2cm}
+    
+    \begin{lstlisting}[language=Matlab]
+function [X_k_filtered, filter_info] = ...
+         design_harmonic_filter(X_k, N, filter_type, harmonics_to_remove)
+    
+    X_k_filtered = X_k;
+    
+    if strcmp(filter_type, 'notch')
+        for i = 1:length(harmonics_to_remove)
+            h = harmonics_to_remove(i);
+            
+            % Positive frequency component
+            idx_pos = h + 1;
+            % Negative frequency (conjugate)
+            idx_neg = N - h + 1;
+            
+            % Zero out both components
+            X_k_filtered(idx_pos) = 0;
+            X_k_filtered(idx_neg) = 0;
+        end
+    end
+    
+    % Calculate THD before/after
+    filter_info = calculate_filter_performance(X_k, X_k_filtered);
+end
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Harmonic Filtering - Concept}
+    \begin{block}{Frequency Domain Filtering}
+        Manipulate DTFS coefficients to remove unwanted harmonics.
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Filter Types Implemented:}
+            \begin{enumerate}
+                \item \textbf{Notch Filter:} Remove specific harmonics
+                \item \textbf{Bandpass Filter:} Retain harmonics in range
+                \item \textbf{Lowpass Filter:} Keep fundamental + few harmonics
+            \end{enumerate}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Process:}
+            \begin{enumerate}
+                \item Perform DTFS analysis
+                \item Zero out unwanted harmonics
+                \item Perform inverse DTFS
+                \item Get filtered time-domain signal
+            \end{enumerate}
+        \end{column}
+    \end{columns}
+    
+    \vspace{0.3cm}
+    
+    \begin{alertblock}{Example}
+        For motor drives: Remove 5th and 7th harmonics using notch filter.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Testing and Validation}
+    \begin{block}{Comprehensive Test Suite}
+        Six independent test scripts validate all core functions.
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Test Scripts:}
+            \begin{enumerate}
+                \item \texttt{test\_calculate\_dtfs.m}
+                \item \texttt{test\_synthesize\_dtfs.m}
+                \item \texttt{test\_generate\_signals.m}
+                \item \texttt{test\_calculate\_thd.m}
+                \item \texttt{test\_power\_quality\_metrics.m}
+                \item \texttt{test\_harmonic\_filter.m}
+            \end{enumerate}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Validation Checks:}
+            \begin{itemize}
+                \item DTFS accuracy verification
+                \item Reconstruction error analysis
+                \item THD calculation validation
+                \item Filter performance testing
+                \item Metrics consistency check
+                \item IEEE compliance verification
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% =====================================================================
+% SECTION 5: RESULTS
+% =====================================================================
+\section{Results and Analysis}
+
+\begin{frame}{Time Domain Waveforms}
+    \begin{center}
+        \includegraphics[width=0.9\textwidth,height=5cm,keepaspectratio]{figures/1.png}
+    \end{center}
+    
+    \vspace{0.2cm}
+    
+    \textbf{Observations:}
+    \begin{itemize}
+        \item \textbf{Ideal:} Perfect sinusoid (THD = 0\%)
+        \item \textbf{LED:} Flattened peaks due to 3rd harmonic
+        \item \textbf{Motor:} Severe distortion with visible harmonic ripple (worst case)
+        \item \textbf{Data Center:} Moderate multi-harmonic distortion
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Frequency Domain Analysis}
+    \begin{center}
+        \includegraphics[width=0.9\textwidth,height=5cm,keepaspectratio]{figures/2.png}
+    \end{center}
+    
+    \vspace{0.2cm}
+    
+    \textbf{Key Findings:}
+    \begin{itemize}
+        \item \textbf{LED:} 3rd harmonic at 58.55V (18\% of fundamental at 150 Hz)
+        \item \textbf{Motor:} 5th at 65.05V (20\%, 250 Hz) and 7th at 45.54V (14\%, 350 Hz)
+        \item \textbf{Data Center:} Distributed harmonics with decreasing amplitude
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Power Quality Metrics Summary}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Metric} & \textbf{Ideal} & \textbf{LED} & \textbf{Motor} & \textbf{Data Center} \\
+            \midrule
+            THD (\%) & 0.00 & 20.2 & \textcolor{red}{26.7} & 19.2 \\
+            Crest Factor & 1.414 & 1.456 & 1.478 & 1.465 \\
+            Power Factor & 1.000 & 0.980 & 0.964 & 0.980 \\
+            K-Factor & 1.00 & 2.18 & \textcolor{red}{4.55} & 2.89 \\
+            IEEE Status & \textcolor{green}{Pass} & \textcolor{red}{Fail} & \textcolor{red}{Fail} & \textcolor{red}{Fail} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+    
+    \vspace{0.3cm}
+    
+    \begin{alertblock}{Worst Case: Motor Drive}
+        \begin{itemize}
+            \item Highest THD: 26.7\% (IEEE limit: 8\%)
+            \item Lowest Power Factor: 0.964
+            \item Highest K-Factor: 4.55 (requires K-4 rated transformer)
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{THD Comparison with IEEE Standards}
+    \begin{center}
+        \includegraphics[width=0.9\textwidth,height=5cm,keepaspectratio]{figures/5.png}
+    \end{center}
+    
+    \vspace{0.2cm}
+    
+    \begin{itemize}
+        \item \textcolor{green!70!black}{Green line (5\%)}: Excellent quality threshold
+        \item \textcolor{red}{Red line (8\%)}: IEEE 519-2014 compliance limit
+        \item All non-linear loads exceed IEEE limits
+        \item Motor drive shows worst THD at 26.7\% (3.5× above limit)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Harmonic Filtering Results - Overview}
+    \textbf{Scenario:} Motor Drive (6-Pulse VFD)\\
+    \textbf{Target Harmonics:} 5th and 7th (characteristic VFD harmonics)\\
+    \textbf{Filter Type:} Notch filter (frequency domain)
+    
+    \vspace{0.3cm}
+    
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Metric} & \textbf{Before} & \textbf{After} & \textbf{Improvement} \\
+            \midrule
+            THD (\%) & 26.7 & 10.8 & \textcolor{green}{61.7\%} \\
+            Crest Factor & 1.478 & 1.435 & 2.9\% \\
+            Power Factor & 0.9636 & 0.9942 & +3.2\% \\
+            K-Factor & 4.55 & 2.59 & \textcolor{green}{43.1\%} \\
+            5th Harmonic (V) & 65.05 & 0.00 & \textcolor{green}{100\%} \\
+            7th Harmonic (V) & 45.54 & 0.00 & \textcolor{green}{100\%} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Filtering Results - Visual Comparison}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth,height=5cm,keepaspectratio]{figures/6.png}
+    \end{center}
+    
+    \textbf{Key Achievements:}
+    \begin{itemize}
+        \item Complete removal of 5th and 7th harmonics
+        \item Significant waveform smoothing
+        \item THD reduced from 26.7\% to 10.8\% (61.7\% reduction)
+        \item Power factor improved to 0.9942
+        \item K-factor reduced to 2.59 (standard K-4 transformer acceptable)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Power Quality Dashboard}
+    \begin{center}
+        \includegraphics[width=0.95\textwidth,height=5cm,keepaspectratio]{figures/7.png}
+    \end{center}
+    
+    \textbf{Comprehensive Metrics:}
+    \begin{itemize}
+        \item THD comparison across all scenarios
+        \item Power factor analysis
+        \item K-factor requirements for transformers
+        \item IEEE 519 compliance status
+        \item Project summary with filtering performance
+    \end{itemize}
+\end{frame}
+
+% =====================================================================
+% SECTION 6: DISCUSSION
+% =====================================================================
+\section{Discussion}
+
+\begin{frame}{Scenario Analysis: LED Lighting}
+    \begin{block}{Characteristics}
+        Dominant 3rd harmonic at 18\% of fundamental, resulting in THD of 20.2\%.
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Causes:}
+            \begin{itemize}
+                \item Single-phase rectifiers
+                \item Non-sinusoidal current draw
+                \item Peak current charging
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Impact:}
+            \begin{itemize}
+                \item Exceeds IEEE limits (8\%)
+                \item K-factor: 2.18
+                \item Power factor: 0.980
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Mitigation:}
+            \begin{itemize}
+                \item Passive 3rd harmonic filters
+                \item Delta-wye transformers
+                \item High-quality LED drivers
+                \item K-4 rated transformers
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Standards:}
+            \begin{itemize}
+                \item IEEE 519-2014: Non-compliant
+                \item IEC 61000-3-2: Check limits
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Scenario Analysis: Motor Drive (VFD)}
+    \begin{block}{Characteristics}
+        Worst power quality with THD of 26.7\%. 5th and 7th harmonics at 20\% and 14\%.
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Causes:}
+            \begin{itemize}
+                \item 6-pulse rectifiers
+                \item Follows $h = 6k \pm 1$
+                \item Non-linear DC bus charging
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Impact:}
+            \begin{itemize}
+                \item 3.5× above IEEE limit
+                \item High K-factor: 4.55
+                \item Requires K-4 transformers
+                \item Significant heating
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Mitigation Results:}
+            \begin{itemize}
+                \item Notch filter: 61.7\% THD reduction
+                \item Final THD: 10.8\%
+                \item Power factor: 0.964 → 0.9942
+                \item K-factor: 4.55 → 2.59
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Recommendations:}
+            \begin{itemize}
+                \item Upgrade to 12-pulse rectifiers
+                \item Active harmonic filters
+                \item Line reactors (5\% impedance)
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Scenario Analysis: Data Center}
+    \begin{block}{Characteristics}
+        Multiple odd harmonics with THD of 20.4\% from SMPS loads.
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Causes:}
+            \begin{itemize}
+                \item Switch-mode power supplies
+                \item High-frequency switching
+                \item Distributed harmonic content
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Impact:}
+            \begin{itemize}
+                \item K-factor: 2.89
+                \item Power factor: 0.980
+                \item Uniform harmonic distribution
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Mitigation:}
+            \begin{itemize}
+                \item Active harmonic filters
+                \item K-13 rated transformers
+                \item Hybrid passive-active systems
+                \item Distributed PF correction
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Challenges:}
+            \begin{itemize}
+                \item Variable load conditions
+                \item Multiple harmonic frequencies
+                \item Passive filters less effective
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Filtering Effectiveness Analysis}
+    \begin{block}{Frequency Domain Notch Filtering}
+        Achieved excellent removal of targeted harmonics (100\% for 5th and 7th).
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Advantages:}
+            \begin{itemize}
+                \item Precise harmonic removal
+                \item No phase distortion
+                \item Preserves fundamental
+                \item Predictable results
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Limitations:}
+            \begin{itemize}
+                \item Residual THD (10.8\%)
+                \item 11th \& 13th remain
+                \item Time-domain only
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Practical Implementation:}
+            \begin{itemize}
+                \item Active filters required
+                \item Proper impedance matching
+                \item Continuous monitoring
+                \item Avoid resonance
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Future Improvements:}
+            \begin{itemize}
+                \item Remove all harmonics $>$ 3rd
+                \item Adaptive filtering
+                \item Real-time implementation
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% =====================================================================
+% SECTION 7: PRACTICAL RECOMMENDATIONS
+% =====================================================================
+\section{Recommendations}
+
+\begin{frame}{Practical Recommendations - By Scenario}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{For LED Lighting:}
+            \begin{itemize}
+                \item Install 3rd harmonic filters (150 Hz)
+                \item Use delta-wye transformers
+                \item Select high-quality LED drivers
+                \item Size for K-4 rating minimum
+            \end{itemize}
+            
+            \vspace{0.4cm}
+            
+            \textbf{For Motor Drives:}
+            \begin{itemize}
+                \item Upgrade to 12-pulse rectifiers
+                \item Install active harmonic filters
+                \item Use 5\% line reactors
+                \item Size for K-13 rating
+                \item Consider DC common bus
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{For Data Centers:}
+            \begin{itemize}
+                \item Deploy active harmonic filters
+                \item Size for K-13 rating
+                \item Implement hybrid systems
+                \item Distributed PF correction
+                \item Continuous monitoring
+            \end{itemize}
+            
+            \vspace{0.4cm}
+            
+            \textbf{General Guidelines:}
+            \begin{itemize}
+                \item Periodic power quality audits
+                \item Monitor IEEE 519 compliance
+                \item Plan harmonic mitigation
+                \item Train maintenance personnel
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Technical Guidelines}
+    \begin{block}{Transformer Selection}
+        K-factor rating based on load type and harmonic content.
+    \end{block}
+    
+    \vspace{0.3cm}
+    
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{Application} & \textbf{K-Factor} & \textbf{Description} \\
+            \midrule
+            Linear Loads & K-1 & Resistive/inductive \\
+            Office Equipment & K-4 & Computers, printers \\
+            LED Lighting & K-4 & Modern lighting \\
+            Motor Drives & K-4 to K-13 & VFDs, converters \\
+            Data Centers & K-13 & SMPS loads \\
+            Extreme & K-20 & Worst-case \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+    
+    \vspace{0.3cm}
+    
+    \textbf{Note:} Our analysis showed K-factors: LED (2.18), Motor (4.55), Data Center (2.89)
+\end{frame}
+
+% =====================================================================
+% SECTION 8: CONCLUSION
+% =====================================================================
+\section{Conclusion}
+
+\begin{frame}{Key Contributions}
+    \begin{enumerate}
+        \item \textbf{DTFS Implementation:} Direct implementation providing accurate harmonic extraction with $O(N^2)$ complexity. Analysis completes in 0.05 seconds for $N=200$.
+        
+        \vspace{0.2cm}
+        
+        \item \textbf{Scenario Characterization:} Distinct harmonic signatures identified for LED lighting (3rd dominant), motor drives (5th \& 7th), and data centers (distributed).
+        
+        \vspace{0.2cm}
+        
+        \item \textbf{IEEE Compliance:} All non-linear loads violate IEEE 519-2014 (THD $>$ 8\%), with motor drives worst at 26.7\%.
+        
+        \vspace{0.2cm}
+        
+        \item \textbf{Filtering Performance:} Frequency-domain notch filtering achieved 61.7\% THD reduction (26.7\% → 10.8\%) and power factor improvement (0.966 → 0.994).
+        
+        \vspace{0.2cm}
+        
+        \item \textbf{Practical Framework:} Actionable recommendations for harmonic mitigation, transformer K-factor selection, and IEEE compliance.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Summary of Findings}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Power Quality Status:}
+            \begin{itemize}
+                \item Ideal: THD = 0\% ✓
+                \item LED: THD = 20.2\% ✗
+                \item Motor: THD = 26.7\% ✗
+                \item Data Center: THD = 19.2\% ✗
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Filtering Results:}
+            \begin{itemize}
+                \item 61.7\% THD reduction
+                \item 100\% removal of 5th \& 7th
+                \item Power factor: +3.2\%
+                \item K-factor: -43.1\%
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Dominant Harmonics:}
+            \begin{itemize}
+                \item LED: 3rd (18\% @ 150 Hz)
+                \item Motor: 5th (20\% @ 250 Hz)
+                \item Motor: 7th (14\% @ 350 Hz)
+                \item Data: Multiple distributed
+            \end{itemize}
+            
+            \vspace{0.3cm}
+            
+            \textbf{Compliance Status:}
+            \begin{itemize}
+                \item IEEE 519 limit: 8\% THD
+                \item All scenarios: Non-compliant
+                \item Mitigation: Essential
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Future Work}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Extensions:}
+            \begin{itemize}
+                \item Three-phase analysis
+                \item Real-time monitoring system
+                \item Adaptive filtering algorithms
+                \item Physical filter design
+                \item Economic cost analysis
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Advanced Features:}
+            \begin{itemize}
+                \item Interharmonics analysis
+                \item Voltage sags/swells detection
+                \item Flicker analysis (Pst, Plt)
+                \item Machine learning prediction
+                \item Hardware integration
+            \end{itemize}
+        \end{column}
+    \end{columns}
+    
+    \vspace{0.5cm}
+    
+    \begin{block}{Significance}
+        As power electronics continue to proliferate, robust power quality analysis tools become increasingly critical for modern electrical infrastructure.
+    \end{block}
+\end{frame}
+
+% =====================================================================
+% FINAL SLIDE
+% =====================================================================
+\begin{frame}[plain]
+    \begin{center}
+        \LARGE \textbf{Thank You!}
+        
+        \vspace{1cm}
+        
+        \Large Questions and Discussion
+        
+        \vspace{1.5cm}
+        
+        \normalsize
+        \textbf{Project Repository:}\\
+        Power Quality Analysis using DTFS\\
+        
+        \vspace{0.5cm}
+        
+        \textbf{Contact:}\\
+        Team 24\_30\_39\_54\_68\\
+        Department of Electrical \& Electronics Engineering\\
+        Manipal Institute of Technology
+        
+        \vspace{0.5cm}
+        
+        \small
+        \textit{Digital Signal Processing - FISAC Assessment}\\
+        \textit{October 2025}
+    \end{center}
+\end{frame}
+
+\end{document}

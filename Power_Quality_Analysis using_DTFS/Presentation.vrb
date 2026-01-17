@@ -1,0 +1,30 @@
+\frametitle{Core Function 5: Harmonic Filtering}
+\textbf{File:} \texttt{design\_harmonic\_filter.m}
+
+    \vspace{0.2cm}
+
+    \begin{lstlisting}[language=Matlab]
+function [X_k_filtered, filter_info] = ...
+         design_harmonic_filter(X_k, N, filter_type, harmonics_to_remove)
+
+    X_k_filtered = X_k;
+
+    if strcmp(filter_type, 'notch')
+        for i = 1:length(harmonics_to_remove)
+            h = harmonics_to_remove(i);
+
+            % Positive frequency component
+            idx_pos = h + 1;
+            % Negative frequency (conjugate)
+            idx_neg = N - h + 1;
+
+            % Zero out both components
+            X_k_filtered(idx_pos) = 0;
+            X_k_filtered(idx_neg) = 0;
+        end
+    end
+
+    % Calculate THD before/after
+    filter_info = calculate_filter_performance(X_k, X_k_filtered);
+end
+    \end{lstlisting}
